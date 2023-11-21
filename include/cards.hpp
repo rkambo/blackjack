@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -98,6 +100,7 @@ class Deck {
         };
     private:
         std::vector<Card> deck;
+        std::vector<Card> discard;
     public:
         Deck() {
             createDeck();
@@ -110,8 +113,8 @@ class Deck {
         }
 
         void createDeck() {
-            for(int in_suit = 0; in_suit < 4; in_suit++) {
-                for(int in_rank = 1; in_rank <= 13; in_rank++) {
+            for(int in_suit = 0; in_suit < 1; in_suit++) {
+                for(int in_rank = 1; in_rank <= 2; in_rank++) {
                     Card card(static_cast<Card::Suit>(in_suit), static_cast<Card::Rank>(in_rank));
                     deck.push_back(card);
                 }
@@ -125,28 +128,15 @@ class Deck {
 
         void draw(Card ** top) {
             if(deck.size() == 0) {
-                *top = nullptr;
-                return;
+                deck.insert(deck.end(), discard.begin(), discard.end());
+                discard.erase(discard.begin(), discard.end());
             }
             **top = deck.back();
             deck.pop_back();
         }
-};
 
-int main() {
-    Deck d;
-    d.shuffleDeck();
-    Deck::Card *top = (Deck::Card *) ::operator new(sizeof(Deck::Card));
-
-    while(true) {
-        d.draw(&top);
-        if(top == nullptr) {
-            break;
+        void flush(std::vector<Card> * toFlush) {
+            discard.insert(discard.end(), (*toFlush).begin(), (*toFlush).end());
+            (*toFlush).erase((*toFlush).begin(), (*toFlush).end());
         }
-        std::cout << (*top).to_full_name(*top) << std::endl;
-    }
-
-    delete top;
-
-    return 0;
-}
+};

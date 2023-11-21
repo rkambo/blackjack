@@ -1,41 +1,52 @@
-#include <iostream>
+#include "../include/cards.hpp"
 
 using namespace std;
 
-struct card {
-    int rank;
-    int value;
-    string suit;
-    string name = rank + " of " + suit;
-};
+void printHeader() {
+    cout << "*************************************************" << endl;
+    cout << " ____  _            _        _            _ " << endl
+            << "|  _ \\| |          | |      | |          | |"   << endl
+            << "| |_) | | __ _  ___| | __   | | __ _  ___| | __" << endl
+            << "|  _ <| |/ _` |/ __| |/ /   | |/ _` |/ __| |/ /" << endl
+            << "| |_) | | (_| | (__|   < |__| | (_| | (__|   < "<< endl
+            << "|____/|_|\\__,_|\\___|_|\\_\\____/ \\__,_|\\___|_|\\_\\" << endl;
 
-int createDeck() {
-    card *deck [52];
-    const string suits [] = {"Hearts", "Clubs", "Spades", "Diamonds"};
-    const string faces [] = {"Jack", "Queen", "King"};
+    cout << "*************************************************" << endl;
+}
 
-    for(string suit: suits) {
-        cout << "Ace" << " of " << suit << endl;
-    }
-
-    // Insert normal cards
-    for(int i = 2; i <= 10; i++) {
-        for(string suit: suits){
-            cout << i << " of " << suit << endl;
-        }
-    }
-
-    for(string face: faces) {
-        for(string suit:suits) {
-            cout << face << " of " << suit << endl;
-        }
-    }
-
-    return 1;
-};
-
+void printHands() {
+    cout << endl;
+    cout << "Dealer's Hand" << endl;
+    cout << "-------------" << endl;
+    cout << endl;
+}
 
 int main() {
-    createDeck();
+
+    printHeader();
+    
+    // Prepare deck
+    Deck d;
+    d.shuffleDeck();
+    Deck::Card *top = (Deck::Card *) ::operator new(sizeof(Deck::Card));
+    std::vector<Deck::Card> dealerCards;
+    std::vector<Deck::Card> playerCards;
+
+    for (Deck::Card c : dealerCards) {
+        cout << c.to_full_name(c) << endl;
+    }
+    // cout << dealerCards.back().to_full_name(dealerCards.back());
+    // printHands();
+    
+    // while(true) {
+    //     d.draw(&top);
+    //     if(top == nullptr) {
+    //         break;
+    //     }
+    //     cout << (*top).to_full_name(*top) << endl;
+    // } 
+
+    // delete top;
+
     return 0;
 }
