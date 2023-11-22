@@ -113,8 +113,8 @@ class Deck {
         }
 
         void createDeck() {
-            for(int in_suit = 0; in_suit < 1; in_suit++) {
-                for(int in_rank = 1; in_rank <= 2; in_rank++) {
+            for(int in_suit = 0; in_suit < 4; in_suit++) {
+                for(int in_rank = 1; in_rank <= 13; in_rank++) {
                     Card card(static_cast<Card::Suit>(in_suit), static_cast<Card::Rank>(in_rank));
                     deck.push_back(card);
                 }

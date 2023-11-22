@@ -14,11 +14,29 @@ void printHeader() {
     cout << "*************************************************" << endl;
 }
 
-void printHands() {
+void printHands(bool firstTurn, std::vector<Deck::Card> * dHand, std::vector<Deck::Card> * pHand) {
     cout << endl;
     cout << "Dealer's Hand" << endl;
     cout << "-------------" << endl;
     cout << endl;
+
+    for( int i = 0; i < (*dHand).size(); i++) {
+        if(i == 0 && firstTurn) {
+            cout << "???" << endl;
+        }
+        else {
+            cout << (*dHand)[i].to_full_name((*dHand)[i]) << endl;
+        }
+    }
+
+    cout << endl;
+    cout << "Player's Hand" << endl;
+    cout << "-------------" << endl;
+    cout << endl;
+
+    for( auto card : (*pHand)) {
+        cout << card.to_full_name(card) << endl;    
+    }
 }
 
 int main() {
@@ -32,11 +50,19 @@ int main() {
     std::vector<Deck::Card> dealerCards;
     std::vector<Deck::Card> playerCards;
 
-    for (Deck::Card c : dealerCards) {
-        cout << c.to_full_name(c) << endl;
-    }
+    // Deal out
+    d.draw(&top);
+    dealerCards.push_back(*top);
+    d.draw(&top);
+    dealerCards.push_back(*top);
+
+    d.draw(&top);
+    playerCards.push_back(*top);
+    d.draw(&top);
+    playerCards.push_back(*top);
+
     // cout << dealerCards.back().to_full_name(dealerCards.back());
-    // printHands();
+    printHands(1, &dealerCards, &playerCards);
     
     // while(true) {
     //     d.draw(&top);
