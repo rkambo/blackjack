@@ -97,37 +97,45 @@ void printMove(bool dealerTurn, State pState) {
 
 void printHands(bool playerTurn, std::vector<Deck::Card> * dHand, std::vector<Deck::Card> * pHand) {
     cout << endl;
-    cout << "Dealer's Hand" << endl;
-    cout << "-------------" << endl;
+    cout << (string("Dealer's Hand")).append(17,' ') << "Player's Hand" << endl;
+    cout << (string("-------------")).append(17,' ') << "-------------" << endl;
     cout << endl;
 
-    for( int i = 0; i < (*dHand).size(); i++) {
+    int dHandSize = (*dHand).size();
+    int pHandSize = (*pHand).size();
+    int maxHandSize = max(dHandSize,pHandSize);
+
+    string cardRow [maxHandSize];
+
+    for( int i = 0; i < dHandSize; i++) {
         if(i == 0 && playerTurn) {
-            cout << "???" << endl;
+            cardRow[0] = "???";
         }
         else {
-            cout << (*dHand)[i].to_full_name((*dHand)[i]) << endl;
+            cardRow[i] = (*dHand)[i].to_full_name((*dHand)[i]);
         }
     }
 
-    cout << endl;
-    cout << "Player's Hand" << endl;
-    cout << "-------------" << endl;
-    cout << endl;
-    
-
-    for( auto card : (*pHand)) {
-        cout << card.to_full_name(card) << endl;    
+    for(int i = 0; i < pHandSize; i++) {
+        cardRow[i] += (*pHand)[i].to_full_name((*pHand)[i]).insert(0, 30 - cardRow[i].length(),' ');
+    }
+   
+    for(int i = 0; i < maxHandSize; i++) {
+        cout << cardRow[i] << endl;
     }
 
+    string dealerTotal = "Dealer Total: " + (playerTurn ? "???" : to_string(handTotal(dHand)));
+    string playerTotal = string("Player Total: ").insert(0, 30 - dealerTotal.length(), ' ') + to_string(handTotal(pHand));
+    
     cout << endl;
-    cout << "Total: " << handTotal(pHand) <<endl;
+    cout << endl;
+
+    cout << dealerTotal << playerTotal << endl;
 
     cout << endl;
-    cout << "--------------------------------" << endl;
+    cout << "*************************************************" << endl;
     cout << endl;
 }
-
 
 int main() {
 
