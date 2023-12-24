@@ -20,7 +20,7 @@ int handTotal(bool aceAlwaysOne, std::vector<Deck::Card> * hand) {
     std::vector<int> values;
     int total = 0;
     for(Deck::Card card : (*hand)) {
-        values.push_back((card).to_value(card.get_rank()));
+        values.push_back(card.to_value());
     }
 
     std::sort(values.begin(),values.end(),greater<int>());
@@ -38,7 +38,7 @@ float bustChance(Deck * deck, int total ) {
     double validCards = 0;
 
     for(auto card : (*deck)) {
-        if((total + card.to_value(card.get_rank())) <= 21) {
+        if((total + card.to_value() <= 21)) {
             validCards += 1;
         }
     }
@@ -122,12 +122,12 @@ void printHands(bool playerTurn, Deck * deck, std::vector<Deck::Card> * dHand, s
             cardRow[0] = "???";
         }
         else {
-            cardRow[i] = (*dHand)[i].to_full_name((*dHand)[i]);
+            cardRow[i] = (*dHand)[i].to_full_name();
         }
     }
 
     for(int i = 0; i < pHandSize; i++) {
-        cardRow[i] += (*pHand)[i].to_full_name((*pHand)[i]).insert(0, 30 - cardRow[i].length(),' ');
+        cardRow[i] += (*pHand)[i].to_full_name().insert(0, 30 - cardRow[i].length(),' ');
     }
    
     for(int i = 0; i < maxHandSize; i++) {

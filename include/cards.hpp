@@ -41,8 +41,8 @@ class Deck {
                 Suit get_suit(){
                     return suit;
                 }
-                std::string to_name(Rank i_rank) {
-                    switch (i_rank) {
+                std::string to_name() {
+                    switch (rank) {
                         case Ace:
                             return "Ace";
                         case Two:
@@ -72,17 +72,17 @@ class Deck {
                     }
                 }
 
-                int to_value(Rank i_rank) {
-                    if(i_rank == Jack || i_rank == Queen || i_rank == King) {
+                int to_value() {
+                    if(rank == Jack || rank == Queen || rank == King) {
                         return 10;
                     }
                     else {
-                        return i_rank;
+                        return rank;
                     }
                 }
 
-                std::string to_suit(Suit i_suit) {
-                    switch(i_suit) {
+                std::string to_suit() {
+                    switch(suit) {
                         case Hearts:
                             return "Hearts";
                         case Diamonds:
@@ -94,8 +94,8 @@ class Deck {
                     }
                 }
 
-                std::string to_full_name(Card i_card) {
-                    return to_name(i_card.rank) + " of " + to_suit(i_card.suit);
+                std::string to_full_name() {
+                    return to_name() + " of " + to_suit();
                 }
         };
     private:
@@ -108,7 +108,7 @@ class Deck {
 
         void printDeck() {
             for(Deck::Card card: deck) {
-                std::cout << card.to_full_name(card) << std::endl;
+                std::cout << card.to_full_name() << std::endl;
             }
         }
 
