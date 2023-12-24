@@ -16,7 +16,7 @@ void printHeader() {
 
     cout << "*************************************************" << endl;
 }
-int handTotal(std::vector<Deck::Card> * hand) {
+int handTotal(bool aceAlwaysOne, std::vector<Deck::Card> * hand) {
     std::vector<int> values;
     int total = 0;
     for(Deck::Card card : (*hand)) {
@@ -26,7 +26,7 @@ int handTotal(std::vector<Deck::Card> * hand) {
     std::sort(values.begin(),values.end(),greater<int>());
     
     for(int rank : values) {
-        if(rank == Deck::Card::Ace and (total + 11 <= 21)) {
+        if(aceAlwaysOne == false and rank == Deck::Card::Ace and (total + 11 <= 21)) {
             total += 11;
         }   
         else total += rank;
@@ -34,6 +34,16 @@ int handTotal(std::vector<Deck::Card> * hand) {
     return total;
 }
 
+float bustChance(Deck * deck, int total ) {
+    double validCards = 0;
+
+    for(auto card : (*deck)) {
+        if((total + card.to_value(card.get_rank())) <= 21) {
+            validCards += 1;
+        }
+    }
+    return (1 - (validCards / deck->size())) * 100;
+}
 void hit(Deck * d, std::vector<Deck::Card> * hand, Deck::Card * top) {
     (*d).draw(&top);
     (*hand).push_back(*top);
@@ -89,13 +99,13 @@ void printMove(bool dealerTurn, State pState) {
             case NORMAL:
                 cout << "Hit - H     Stand - S" << endl;
                 break;
-            DEFAULT:
-                cout << "PlayerState: " << pState << endl;
+            default:
+                cerr << "Unrecognized state: " << pState << endl;
         }
     }
 }
 
-void printHands(bool playerTurn, std::vector<Deck::Card> * dHand, std::vector<Deck::Card> * pHand) {
+void printHands(bool playerTurn, Deck * deck, std::vector<Deck::Card> * dHand, std::vector<Deck::Card> * pHand) {
     cout << endl;
     cout << (string("Dealer's Hand")).append(17,' ') << "Player's Hand" << endl;
     cout << (string("-------------")).append(17,' ') << "-------------" << endl;
@@ -124,14 +134,17 @@ void printHands(bool playerTurn, std::vector<Deck::Card> * dHand, std::vector<De
         cout << cardRow[i] << endl;
     }
 
-    string dealerTotal = "Dealer Total: " + (playerTurn ? "???" : to_string(handTotal(dHand)));
-    string playerTotal = string("Player Total: ").insert(0, 30 - dealerTotal.length(), ' ') + to_string(handTotal(pHand));
-    
+    string dealerTotalString = "Dealer Total: " + (playerTurn ? "???" : to_string(handTotal(false, dHand)));
+    string playerTotalString = string("Player Total: ").insert(0, 30 - dealerTotalString.length(), ' ') + to_string(handTotal(false, pHand));
+    int playerTotal = handTotal(true, pHand);
+
     cout << endl;
     cout << endl;
 
-    cout << dealerTotal << playerTotal << endl;
-
+    cout << dealerTotalString << playerTotalString << endl;
+    if(playerTotal < 21) {
+        cout << "Bust Probability: " << bustChance(deck, playerTotal) << "%" << endl;
+    }
     cout << endl;
     cout << "*************************************************" << endl;
     cout << endl;
@@ -157,8 +170,8 @@ int main() {
     hit(&d,&playerCards,top);
     hit(&d,&playerCards,top);
     
-    printHands(1, &dealerCards, &playerCards);
-    gameState = checkBust(0, handTotal(&playerCards), handTotal(&dealerCards));
+    printHands(1, &d,&dealerCards, &playerCards);
+    gameState = checkBust(0, handTotal(false, &playerCards), handTotal(false, &dealerCards));
     printMove(0,gameState);
     if(gameState != NORMAL) {
         return 0;
@@ -171,8 +184,8 @@ int main() {
             case 'h':
             case 'H':
                 hit(&d,&playerCards,top);
-                printHands(1, &dealerCards, &playerCards);
-                gameState = checkBust(0, handTotal(&playerCards), handTotal(&dealerCards));
+                printHands(1, &d,&dealerCards, &playerCards);
+                gameState = checkBust(0, handTotal(false, &playerCards), handTotal(false, &dealerCards));
                 printMove(0,gameState);
                 if(gameState != NORMAL) {
                     turnOver = true;
@@ -180,16 +193,19 @@ int main() {
                 break;
             case 's':
             case 'S':
-                gameState = checkBust(1, handTotal(&playerCards), handTotal(&dealerCards));
+                gameState = checkBust(1, handTotal(false, &playerCards), handTotal(false, &dealerCards));
                 while(gameState == NORMAL) {
                     hit(&d,&dealerCards,top);
-                    gameState = checkBust(1, handTotal(&playerCards), handTotal(&dealerCards));
+                    gameState = checkBust(1, handTotal(false, &playerCards), handTotal(false, &dealerCards));
                 }
-                printHands(0, &dealerCards, &playerCards);
+                printHands(0, &d,&dealerCards, &playerCards);
                 printMove(1, gameState);
                 if(gameState != NORMAL) {
                     turnOver = true;
                 }
+                break;
+            default:
+                cout << "Invalid input! Please try again!" << endl;
         }
     }
     delete top;

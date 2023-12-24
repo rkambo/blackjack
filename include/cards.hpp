@@ -121,6 +121,13 @@ class Deck {
             }
         }
 
+        std::vector<Deck::Card>::iterator begin() { return deck.begin(); }
+        std::vector<Deck::Card>::iterator end(){ return deck.end(); }
+
+        int size() {
+            return deck.size();
+        }
+
         void shuffleDeck() {
             unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
             shuffle (deck.begin(), deck.end(), std::default_random_engine(seed));
