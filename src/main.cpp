@@ -5,6 +5,9 @@ using namespace std;
 
 enum State {NORMAL, BLACKJACK, BUST, PUSH, DEALERWIN};
 
+/**
+ * Prints out the title graphic
+*/
 void printHeader() {
     cout << "*************************************************" << endl;
     cout << " ____  _            _        _            _ " << endl
@@ -16,14 +19,18 @@ void printHeader() {
 
     cout << "*************************************************" << endl;
 }
-int handTotal(bool aceAlwaysOne, std::vector<Deck::Card> * hand) {
-    std::vector<int> values;
+
+/**
+ * Calculates the numerical total based on the hand passed in
+*/
+int handTotal(bool aceAlwaysOne, vector<Deck::Card> * hand) {
+    vector<int> values;
     int total = 0;
     for(Deck::Card card : (*hand)) {
         values.push_back(card.to_value());
     }
 
-    std::sort(values.begin(),values.end(),greater<int>());
+    sort(values.begin(),values.end(),greater<int>());
     
     for(int rank : values) {
         if(aceAlwaysOne == false and rank == Deck::Card::Ace and (total + 11 <= 21)) {
@@ -34,6 +41,10 @@ int handTotal(bool aceAlwaysOne, std::vector<Deck::Card> * hand) {
     return total;
 }
 
+/**
+ * Calculates the chance that the player's total is going over 21
+ * based on their current total
+*/
 float bustChance(Deck * deck, int total ) {
     double validCards = 0;
 
@@ -44,11 +55,19 @@ float bustChance(Deck * deck, int total ) {
     }
     return (1 - (validCards / deck->size())) * 100;
 }
-void hit(Deck * d, std::vector<Deck::Card> * hand, Deck::Card * top) {
+
+/**
+ * Draws a card from the deck and adds it to the hand. Keeps track of the card
+ * with the top variable
+*/
+void hit(Deck * d, vector<Deck::Card> * hand, Deck::Card * top) {
     (*d).draw(&top);
     (*hand).push_back(*top);
 }
 
+/**
+ * Checks if the dealer or player's hand total has went over 21
+*/
 State checkBust(bool checkForDealer, int pTotal, int dTotal) {
     int total = checkForDealer ? dTotal : pTotal; 
 
@@ -69,6 +88,10 @@ State checkBust(bool checkForDealer, int pTotal, int dTotal) {
         return NORMAL;
     
 }
+
+/**
+ * Outputs the status of the game or prompts user input
+*/
 void printMove(bool dealerTurn, State pState) {
     if(dealerTurn) {
         switch(pState) {
@@ -105,7 +128,10 @@ void printMove(bool dealerTurn, State pState) {
     }
 }
 
-void printHands(bool playerTurn, Deck * deck, std::vector<Deck::Card> * dHand, std::vector<Deck::Card> * pHand) {
+/**
+ * Prints the dealer and player's hands to the output
+*/
+void printHands(bool playerTurn, Deck * deck, vector<Deck::Card> * dHand, vector<Deck::Card> * pHand) {
     cout << endl;
     cout << (string("Dealer's Hand")).append(17,' ') << "Player's Hand" << endl;
     cout << (string("-------------")).append(17,' ') << "-------------" << endl;
@@ -158,18 +184,19 @@ int main() {
     Deck d;
     d.shuffleDeck();
     Deck::Card *top = (Deck::Card *) ::operator new(sizeof(Deck::Card));
-    std::vector<Deck::Card> dealerCards;
-    std::vector<Deck::Card> playerCards;
+    vector<Deck::Card> dealerCards;
+    vector<Deck::Card> playerCards;
     bool turnOver = false;
     State gameState;
 
-    // Deal out
+    // Deals out the initial cards
     hit(&d,&dealerCards,top);
     hit(&d,&dealerCards,top);
 
     hit(&d,&playerCards,top);
     hit(&d,&playerCards,top);
     
+    // Checks if the first deal ends the game
     printHands(1, &d,&dealerCards, &playerCards);
     gameState = checkBust(0, handTotal(false, &playerCards), handTotal(false, &dealerCards));
     printMove(0,gameState);
@@ -178,6 +205,7 @@ int main() {
     }
     char input;
 
+    // Game loop
     while(turnOver == false) {
         cin >> input;
         switch(input) {

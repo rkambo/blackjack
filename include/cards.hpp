@@ -11,7 +11,7 @@ class Deck {
     public:
         class Card {
             public:
-                enum Suit {Hearts, Diamonds, Spades, Clubs};
+                enum Suit {Hearts, Diamonds, Spades, Clubs, NumOfSuits};
                 enum Rank {
                     Ace = 1,
                     Two = 2,
@@ -25,7 +25,8 @@ class Deck {
                     Ten = 10,
                     Jack = 11,
                     Queen = 12,
-                    King = 13
+                    King = 13,
+                    NumOfRanks = 13
                     };
             private:
                 Rank rank;
@@ -91,6 +92,8 @@ class Deck {
                             return "Spades";
                         case Clubs:
                             return "Clubs";
+                        default:
+                            return "";
                     }
                 }
 
@@ -113,8 +116,8 @@ class Deck {
         }
 
         void createDeck() {
-            for(int in_suit = 0; in_suit < 4; in_suit++) {
-                for(int in_rank = 1; in_rank <= 13; in_rank++) {
+            for(int in_suit = 0; in_suit < Card::Suit::NumOfSuits; in_suit++) {
+                for(int in_rank = 1; in_rank <= Card::Rank::NumOfRanks; in_rank++) {
                     Card card(static_cast<Card::Suit>(in_suit), static_cast<Card::Rank>(in_rank));
                     deck.push_back(card);
                 }
@@ -133,6 +136,10 @@ class Deck {
             shuffle (deck.begin(), deck.end(), std::default_random_engine(seed));
         }
 
+        /**
+         * Draws a card by removing it from the top of the deck.
+         * If deck is empty, re-adds from the discard pile.
+        */
         void draw(Card ** top) {
             if(deck.size() == 0) {
                 deck.insert(deck.end(), discard.begin(), discard.end());
@@ -142,6 +149,10 @@ class Deck {
             deck.pop_back();
         }
 
+        /**
+         * Sends cards to the discard pile to be removed from play
+         * until deck size is 0.
+        */
         void flush(std::vector<Card> * toFlush) {
             discard.insert(discard.end(), (*toFlush).begin(), (*toFlush).end());
             (*toFlush).erase((*toFlush).begin(), (*toFlush).end());
